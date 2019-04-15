@@ -1,11 +1,15 @@
 <template>
-    <default-field :field="field" :errors="errors" :show-help-text="false" :full-width-content="true" class="medialibrary-field">
+    <default-field :field="field" :errors="errors" :full-width-content="true" class="medialibrary-field">
         <template slot="field">
             <Medialibrary v-if="isNotEmpty" :field="field" v-model="value"/>
 
             <div :class="isNotEmpty ? 'border-b border-40 my-4' : 'my-2'"></div>
 
             <UploadFiles :field="field" v-model="filesToUpload" :errors="errors"/>
+
+            <help-text class="error-text mt-2 text-danger" v-if="hasError">
+                {{ firstError }}
+            </help-text>
         </template>
     </default-field>
 </template>
@@ -35,6 +39,18 @@ export default {
     computed: {
         isNotEmpty () {
             return this.value && this.value.length
+        },
+
+        hasError () {
+            return !!this.firstError
+        },
+
+        firstError () {
+            for (let key in this.errors.all()) {
+                if (key.startsWith(this.fieldAttribute) && key !== this.fieldAttribute) {
+                    return this.errors.first(key)
+                }
+            }
         }
     },
 

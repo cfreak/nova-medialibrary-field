@@ -192,15 +192,19 @@ export default {
             const fieldErrors = Object.keys(errors).filter(key => key.startsWith(`${this.field.collectionName}.`))
 
             fieldErrors.forEach(key => {
-               const file = this.files[+key.split('.')[1]]
+                const error = (errors[key][0] || '').replace(key, 'file')
 
-                file.uploadingFailed = true
+                const file = this.files[+key.split('.')[1]]
 
-                const message = (errors[key][0] || '').replace(key, 'file')
+                if (file) {
+                    file.uploadingFailed = true
+                }
 
-                this.error(`${file.file.name}: ${message}`, {}, {
+                const message = file ? `${file.file.name}: ${error}` : error
+
+                this.error(message, {}, {
                     duration: null,
-                    action: { text : 'OK', onClick : (e, toast) => toast.goAway(0)}
+                    action: { text : 'OK', onClick : (e, toast) => toast.goAway(0) }
                 })
             })
         }
